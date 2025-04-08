@@ -1,59 +1,52 @@
 <template>
-  <div id="app">
-    <h1>Lista de Películas</h1>
-    <TarjetaPelicula 
-      v-for="pelicula in peliculas" 
-      :key="pelicula.id" 
-      :pelicula="pelicula" 
-      @actualizar_megusta="actualizarMeGusta" 
+  <div class="cartelera">
+    CATELERA
+  </div>
+  <div class="contenedor">
+    <CardComponent
+      v-for="pelicula in peliculas"
+      :key="pelicula.id"
+      :movie="pelicula"
+      :yaLikeado="likeados.includes(pelicula.id)"
+      @like="sumarLike"
     />
   </div>
+       
 </template>
 
-<script>
-import TarjetaPelicula from './components/CardComponent.vue';
+<script setup lang="ts">
+import { ref } from 'vue'
+import CardComponent from './components/CardComponent.vue'
+import type { Pelicula } from './interfaces/Pelicula'
+import peliculasData from './resources/peliculas' // 
 
-export default {
-  components: {
-    TarjetaPelicula
-  },
-  data() {
-    return {
-      peliculas: [
-        {
-          id: 1,
-          titulo: "El Padrino",
-          descripcion: "Un drama de crimen y mafia.",
-          portada: "https://via.placeholder.com/150",
-          likes: 10
-        },
-        {
-          id: 2,
-          titulo: "Interstellar",
-          descripcion: "Viajes espaciales y agujeros de gusano.",
-          portada: null,
-          likes: 5
-        }
-      ]
-    };
-  },
-  methods: {
-    actualizarMeGusta({ id, likes }) {
-      const pelicula = this.peliculas.find(p => p.id === id);
-      if (pelicula) {
-        pelicula.likes = likes;
-      }
-    }
+// Ref reactivo con todas las películas
+const peliculas = ref<Pelicula[]>(peliculasData)
+
+// Lista de películas a las que se les dio like
+const likeados = ref<number[]>([])
+
+// Función para incrementar likes y evitar múltiples likes
+function sumarLike(id: number) {
+  const peli = peliculas.value.find(p => p.id === id)
+  if (peli && !likeados.value.includes(id)) {
+    peli.likes++
+    likeados.value.push(id)
   }
-};
+}
 </script>
 
-<style>
-#app {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #0a192f;
+<style scoped>
+.cartelera{
+  padding: 10 20;
   color: white;
-  padding: 20px;
+  font-size: 4.5em;
+  font-weight: 400;
+  }
+.contenedor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }
 </style>
